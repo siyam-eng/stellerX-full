@@ -19,7 +19,7 @@ const LegacyPageWithOverlay = forwardRef<HTMLIFrameElement, LegacyPageWithOverla
         {/* The iframe itself */}
         <iframe
           ref={ref}
-          src="/legacy.html"
+          src="/stellerX-full/legacy.html"
           className=" w-full h-full"
           style={{ 
             border: "none",

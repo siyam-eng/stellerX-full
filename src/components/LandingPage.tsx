@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, Heart, Sparkles, X } from 'lucide-react';
+import GirlPortrait from "../../Img/Girl Portrait.png";
 
 interface LandingPageProps {
   onNext: () => void;
@@ -66,7 +67,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNext, onSkipToElements }) =
             <div className="relative anime-character animate-float">
               <div className="w-80 h-80 rounded-full relative overflow-hidden border-4 border-stellar-gold shadow-2xl">
                 <img 
-                  src="/Girl Portrait.png" 
+                  src={GirlPortrait} 
                   alt="Character Portrait" 
                   className="w-full h-full object-cover"
                 />
