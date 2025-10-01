@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Children's Art Showcase - Stellar Stories</title>
+    <link rel="shortcut icon" href="./assets/img/fav.png" type="image/x-icon">
+    <link rel="icon" href="./assets/img/fav.png" type="image/x-icon">
+    <link rel="apple-touch-icon" href="./assets/img/fav.png">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="./assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./assets/css/fontawesome.min.css">
+    <link rel="stylesheet" href="./assets/css/style.css">
+    
+    <style>
+        body {
+            background: #000;
+            min-height: 100vh;
+            font-family: var(--font-ubu);
+            color: var(--text-color);
+        }
+
+        .art-showcase-container {
+            padding: 2em 0;
+            background: linear-gradient(135deg, #0a0a2e 0%, #16213e 50%, #1a1a3a 100%);
+            min-height: calc(100vh - 100px);
+        }
+
+        .art-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2em;
+            margin-top: 2em;
+        }
+
+        .art-card {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(20px);
+            border-radius: var(--bs-card-border-radius);
+            padding: var(--bs-card-spacer-y);
+            border: var(--bs-card-border-width) solid var(--bs-card-border-color);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .art-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(var(--bs-primary-rgb), 0.2);
+            border-color: var(--bs-primary);
+        }
+
+        .art-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 0.5em;
+            margin-bottom: 1em;
+            transition: 0.3s ease;
+        }
+
+        .art-card:hover .art-image {
+            transform: scale(1.05);
+        }
+
+        .art-title {
+            color: var(--bs-primary);
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 0.5em;
+            font-family: var(--font-osw);
+        }
+
+        .art-artist {
+            color: #00d4ff;
+            font-size: 1.1em;
+            margin-bottom: 0.5em;
+            font-weight: 500;
+        }
+
+        .art-age {
+            color: #ffb347;
+            font-size: 0.9em;
+            margin-bottom: 1em;
+        }
+
+        .art-description {
+            color: #e6f3ff;
+            font-size: 0.9em;
+            line-height: 1.667;
+        }
+
+        .showcase-title {
+            background: var(--bs-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 1em;
+            font-family: var(--font-osw);
+            filter: drop-shadow(0 5px 20px #000);
+        }
+
+        .showcase-subtitle {
+            color: #b3d9ff;
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 2em;
+        }
+
+        .submission-info {
+            background: rgba(var(--bs-primary-rgb), 0.1);
+            border-left: 4px solid var(--bs-primary);
+            padding: 1.5em;
+            margin: 2em 0;
+            border-radius: 0.5em;
+            backdrop-filter: blur(10px);
+        }
+
+        .submission-info h4 {
+            color: var(--bs-primary);
+            margin-bottom: 1em;
+            font-family: var(--font-osw);
+        }
+
+        .submission-info p {
+            color: #ffffff;
+            margin-bottom: 0.5em;
+            line-height: 1.667;
+        }
+
+        .placeholder-art {
+            background: var(--bs-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Add space-themed background pattern */
+        .art-showcase-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #ffffff, transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(255, 255, 255, 0.8), transparent),
+                radial-gradient(1px 1px at 90px 40px, rgba(255, 255, 255, 0.6), transparent),
+                radial-gradient(1px 1px at 130px 80px, rgba(255, 255, 255, 0.4), transparent),
+                radial-gradient(2px 2px at 160px 30px, rgba(255, 255, 255, 0.7), transparent);
+            background-repeat: repeat;
+            background-size: 200px 100px;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .art-showcase-container > * {
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <!--======== HEADER AREA ========-->
+    <header class="header-area">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-4">
+                    <h5 class="logo text-white mb-0">
+                        <a href="./index.html">
+                            <img src="./assets/img/fav.png" alt="">
+                            Stellar Stories - Space Weather Chronicles
+                        </a>
+                    </h5>
+                </div>
+                <div class="col-md-8">
+                    <ul class="mainmenu text-end">
+                        <li><a class="home-button" href="./index.html"><i class="fas fa-home me-2"></i> Home</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!--======== HEADER AREA// ========-->
+
+    <!--======== MAIN CONTENT ========-->
+    <main style="padding-top: 100px;">
+        <div class="container art-showcase-container">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="showcase-title">Children's Art Showcase</h1>
+                    <p class="showcase-subtitle">
+                        <i class="fas fa-palette me-2"></i>
+                        Inspiring young artists' visions of space weather and cosmic phenomena
+                    </p>
+
+
+
+                    <div class="art-gallery">
+                        <!-- Sample Art Card 1 -->
+                        <div class="art-card">
+                            <div class="art-image placeholder-art">
+                                <i class="fas fa-star me-2"></i>
+                                Aurora Dreams
+                            </div>
+                            <div class="art-title">Aurora Dreams</div>
+                            <div class="art-artist">By Emma Johnson</div>
+                            <div class="art-age">Age: 10 years</div>
+                            <div class="art-description">
+                                "I painted the northern lights dancing in the sky like colorful ribbons. I imagined what it would be like to see them from space!"
+                            </div>
+                        </div>
+
+                        <!-- Sample Art Card 2 -->
+                        <div class="art-card">
+                            <div class="art-image placeholder-art">
+                                <i class="fas fa-sun me-2"></i>
+                                Solar Storm
+                            </div>
+                            <div class="art-title">Solar Storm Adventure</div>
+                            <div class="art-artist">By Marcus Chen</div>
+                            <div class="art-age">Age: 12 years</div>
+                            <div class="art-description">
+                                "This is my drawing of a solar storm reaching Earth. The astronauts are watching it from their space station!"
+                            </div>
+                        </div>
+
+                        <!-- Sample Art Card 3 -->
+                        <div class="art-card">
+                            <div class="art-image placeholder-art">
+                                <i class="fas fa-rocket me-2"></i>
+                                Space Explorer
+                            </div>
+                            <div class="art-title">Space Weather Explorer</div>
+                            <div class="art-artist">By Sofia Rodriguez</div>
+                            <div class="art-age">Age: 8 years</div>
+                            <div class="art-description">
+                                "My space explorer is flying through a magnetic field storm. She has special equipment to study space weather!"
+                            </div>
+                        </div>
+
+                        <!-- Sample Art Card 4 -->
+                        <div class="art-card">
+                            <div class="art-image placeholder-art">
+                                <i class="fas fa-globe me-2"></i>
+                                Earth's Shield
+                            </div>
+                            <div class="art-title">Earth's Magnetic Shield</div>
+                            <div class="art-artist">By Alex Thompson</div>
+                            <div class="art-age">Age: 14 years</div>
+                            <div class="art-description">
+                                "I drew Earth's magnetosphere protecting us from solar wind. The blue lines show how our planet's magnetic field deflects harmful particles."
+                            </div>
+                        </div>
+
+                        <!-- Sample Art Card 5 -->
+                        <div class="art-card">
+                            <div class="art-image placeholder-art">
+                                <i class="fas fa-satellite me-2"></i>
+                                Satellite Guardian
+                            </div>
+                            <div class="art-title">Satellite Guardian</div>
+                            <div class="art-artist">By Zoe Williams</div>
+                            <div class="art-age">Age: 11 years</div>
+                            <div class="art-description">
+                                "This is a special satellite that protects other satellites from space weather. It has shields and warning systems!"
+                            </div>
+                        </div>
+
+                        <!-- Sample Art Card 6 -->
+                        <div class="art-card">
+                            <div class="art-image placeholder-art">
+                                <i class="fas fa-meteor me-2"></i>
+                                Cosmic Dance
+                            </div>
+                            <div class="art-title">Cosmic Dance</div>
+                            <div class="art-artist">By Ryan Park</div>
+                            <div class="art-age">Age: 9 years</div>
+                            <div class="art-description">
+                                "I painted particles from the sun dancing with Earth's atmosphere to create beautiful auroras. It's like a cosmic ballet!"
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-5">
+                        <div class="submission-info">
+                            <h4><i class="fas fa-heart me-2"></i>Thank You to All Young Artists!</h4>
+                            <p>Your creativity helps us understand and appreciate the wonders of space weather.</p>
+                            <p>Keep exploring, keep creating, and keep dreaming about the cosmos!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="./assets/js/jquery-3.7.1.min.js"></script>
+    <script src="./assets/js/main.js"></script>
+</body>
+
+</html>
