@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurora Painter - Stellar Stories</title>
+    <link rel="shortcut icon" href="./assets/img/fav.png" type="image/x-icon">
+    <link rel="stylesheet" href="./assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./assets/css/fontawesome.min.css">
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <style>
+        body {
+            background: #000;
+            color: #fff;
+            font-family: var(--font-ubu);
+        }
+
+        .aurora-container {
+            position: relative;
+            width: 100%;
+            height: 80vh;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 1.2em;
+            overflow: hidden;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #auroraCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .controls-panel {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 1.2em;
+            padding: 2em;
+            margin-top: 2em;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .slider-container {
+            margin: 1.5em 0;
+        }
+
+        .intensity-slider {
+            width: 100%;
+            height: 1px;
+            border-radius: 0.5px;
+            background: linear-gradient(90deg, #333 0%, var(--bs-primary) 50%, var(--bs-secondary) 100%);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .intensity-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(0, 212, 255, 0.6);
+            border: 2px solid #ffffff;
+        }
+
+        .intensity-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            cursor: pointer;
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 8px rgba(0, 212, 255, 0.6);
+        }
+
+        .intensity-value {
+            color: var(--bs-primary);
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .aurora-info {
+            background: rgba(255, 69, 0, 0.1);
+            border-left: 4px solid var(--bs-primary);
+            padding: 1.5em;
+            margin: 1.5em 0;
+            border-radius: 0.5em;
+        }
+
+        .back-button {
+            background: var(--bs-gradient);
+            border: none;
+            padding: 0.75em 2em;
+            border-radius: 2em;
+            color: #fff;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 1.5em;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 69, 0, 0.4);
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .aurora-title {
+            background: var(--bs-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.5em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <!--======== HEADER AREA ========-->
+    <header class="header-area">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-4">
+                    <h5 class="logo text-white mb-0">
+                        <a href="./index.html">
+                            <img src="./assets/img/fav.png" alt="">
+                            Stellar Stories - Space Weather Chronicles
+                        </a>
+                    </h5>
+                </div>
+                <div class="col-md-8">
+                    <ul class="mainmenu text-end">
+                        <li><a class="home-button" href="./index.html"><i class="fas fa-home me-2"></i> Home</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!--======== HEADER AREA// ========-->
+
+    <!--======== MAIN CONTENT ========-->
+    <main style="padding-top: 100px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="aurora-title">Aurora Painter</h1>
+                    
+                    <div class="aurora-container">
+                        <canvas id="auroraCanvas"></canvas>
+                    </div>
+                    
+                    <div class="controls-panel">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h3 class="text-white mb-3">
+                                    <i class="fas fa-sliders-h"></i> Aurora Intensity Control
+                                </h3>
+                                <div class="slider-container">
+                                    <label for="intensitySlider" class="text-white mb-2 d-block">
+                                        Magnetic Storm Intensity
+                                    </label>
+                                    <input type="range" id="intensitySlider" class="intensity-slider" 
+                                           min="0" max="100" value="30" step="1">
+                                    <div class="intensity-value" id="intensityValue">30%</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="aurora-info">
+                                    <h5 style="color: var(--bs-primary);" class="mb-3">
+                                        <i class="fas fa-info-circle"></i> Aurora Facts
+                                    </h5>
+                                    <p class="text-white mb-2" style="font-size: 0.9em;">
+                                        Auroras occur when charged particles from the solar wind interact with Earth's magnetosphere.
+                                    </p>
+                                    <p style="color: var(--bs-secondary); font-size: 0.8em;" class="mb-0">
+                                        Higher intensity = stronger magnetic storms = more visible auroras!
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        class AuroraPainter {
+            constructor() {
+                this.canvas = document.getElementById('auroraCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.slider = document.getElementById('intensitySlider');
+                this.valueDisplay = document.getElementById('intensityValue');
+                
+                this.intensity = 30;
+                this.particles = [];
+                this.waves = [];
+                this.auroraImage = null;
+                this.imageLoaded = false;
+                this.animationTime = 0;
+                
+                this.loadAuroraImage();
+                this.init();
+                this.setupEventListeners();
+                this.animate();
+            }
+            
+            loadAuroraImage() {
+                this.auroraImage = new Image();
+                this.auroraImage.onload = () => {
+                    this.imageLoaded = true;
+                    this.resizeCanvas();
+                };
+                this.auroraImage.src = 'assets/img/auroraslider.jpg';
+            }
+            
+            init() {
+                this.resizeCanvas();
+                this.createParticles();
+                window.addEventListener('resize', () => this.resizeCanvas());
+            }
+            
+            resizeCanvas() {
+                const rect = this.canvas.getBoundingClientRect();
+                this.canvas.width = rect.width;
+                this.canvas.height = rect.height;
+            }
+            
+            setupEventListeners() {
+                this.slider.addEventListener('input', (e) => {
+                    this.intensity = parseInt(e.target.value);
+                    this.valueDisplay.textContent = this.intensity + '%';
+                    this.updateAuroraIntensity();
+                });
+            }
+            
+            createParticles() {
+                this.particles = [];
+                for (let i = 0; i < 150; i++) {
+                    this.particles.push({
+                        x: Math.random() * this.canvas.width,
+                        y: Math.random() * this.canvas.height,
+                        vx: (Math.random() - 0.5) * 2,
+                        vy: Math.random() * 2 + 1,
+                        size: Math.random() * 3 + 1,
+                        opacity: Math.random() * 0.8 + 0.2,
+                        color: this.getAuroraColor()
+                    });
+                }
+            }
+            
+            getAuroraColor(index = 0) {
+                const baseIntensity = this.intensity / 100;
+                const colors = [
+                    `rgba(0, 255, 150, ${0.2 * baseIntensity + 0.1})`,
+                    `rgba(0, 212, 255, ${0.18 * baseIntensity + 0.08})`,
+                    `rgba(150, 255, 0, ${0.15 * baseIntensity + 0.06})`,
+                    `rgba(255, 100, 255, ${0.12 * baseIntensity + 0.04})`,
+                    `rgba(100, 255, 255, ${0.1 * baseIntensity + 0.02})`
+                ];
+                return colors[index % colors.length];
+            }
+            
+            updateAuroraIntensity() {
+                // Update particle properties based on intensity
+                this.particles.forEach(particle => {
+                    const baseOpacity = Math.random() * 0.8 + 0.2;
+                    particle.opacity = baseOpacity * (this.intensity / 100);
+                    particle.vy = (Math.random() * 2 + 1) * (1 + this.intensity / 50);
+                });
+            }
+            
+            drawStars() {
+                this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                for (let i = 0; i < 100; i++) {
+                    const x = Math.random() * this.canvas.width;
+                    const y = Math.random() * this.canvas.height * 0.6;
+                    const size = Math.random() * 2;
+                    this.ctx.beginPath();
+                    this.ctx.arc(x, y, size, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+            }
+            
+            drawParticles() {
+                // Smooth particle opacity transition based on intensity
+                const intensityFactor = this.intensity / 100;
+                
+                this.particles.forEach(particle => {
+                    // Calculate smooth opacity transition
+                    const particleOpacity = particle.opacity * intensityFactor;
+                    
+                    if (particleOpacity > 0.01) { // Only draw if visible enough
+                        this.ctx.save();
+                        this.ctx.globalAlpha = particleOpacity;
+                        this.ctx.fillStyle = particle.color;
+                        this.ctx.beginPath();
+                        this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                        this.ctx.fill();
+                        this.ctx.restore();
+                    }
+                    
+                    // Update particle position (always update for smooth animation)
+                    particle.x += particle.vx * Math.max(0.1, intensityFactor); // Slow down when intensity is low
+                    particle.y += particle.vy * Math.max(0.1, intensityFactor);
+                    
+                    // Reset particle if it goes off screen
+                    if (particle.y > this.canvas.height) {
+                        particle.y = -10;
+                        particle.x = Math.random() * this.canvas.width;
+                    }
+                    if (particle.x < 0 || particle.x > this.canvas.width) {
+                        particle.x = Math.random() * this.canvas.width;
+                    }
+                });
+            }
+            
+            animate() {
+                this.animationTime += 0.02;
+                
+                // Clear canvas
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Draw aurora background image if loaded
+                if (this.imageLoaded && this.auroraImage) {
+                    // Calculate scaling to fit canvas while maintaining aspect ratio
+                    const imageAspect = this.auroraImage.width / this.auroraImage.height;
+                    const canvasAspect = this.canvas.width / this.canvas.height;
+                    
+                    let drawWidth, drawHeight, drawX, drawY;
+                    
+                    if (imageAspect > canvasAspect) {
+                        // Image is wider than canvas
+                        drawHeight = this.canvas.height;
+                        drawWidth = drawHeight * imageAspect;
+                        drawX = (this.canvas.width - drawWidth) / 2;
+                        drawY = 0;
+                    } else {
+                        // Image is taller than canvas
+                        drawWidth = this.canvas.width;
+                        drawHeight = drawWidth / imageAspect;
+                        drawX = 0;
+                        drawY = (this.canvas.height - drawHeight) / 2;
+                    }
+                    
+                    // Create smooth transition between states
+                    const intensityFactor = this.intensity / 100;
+                    
+                    // Always draw the base image first
+                    this.ctx.save();
+                    
+                    // Create color fluctuation effect based on intensity and time
+                    const colorFluctuation = (Math.sin(this.animationTime * 3) + 1) / 2; // 0 to 1
+                    
+                    // Smooth transition for base image appearance
+                    let baseOpacity, hueShift, saturation, brightness;
+                    
+                    if (intensityFactor === 0) {
+                        // Zero intensity: dim, desaturated base image
+                        baseOpacity = 0.3;
+                        hueShift = 0;
+                        saturation = 20; // Very desaturated
+                        brightness = 60; // Darker
+                    } else {
+                        // Non-zero intensity: aurora effects with smooth scaling
+                        baseOpacity = 0.7 + (intensityFactor * 0.3);
+                        const fluctuatingOpacity = baseOpacity + (colorFluctuation * intensityFactor * 0.2);
+                        baseOpacity = Math.min(fluctuatingOpacity, 1.0);
+                        
+                        hueShift = Math.sin(this.animationTime * 2) * 30 * intensityFactor;
+                        saturation = 100 + (colorFluctuation * intensityFactor * 50);
+                        brightness = 100 + (colorFluctuation * intensityFactor * 30);
+                    }
+                    
+                    this.ctx.globalAlpha = baseOpacity;
+                    this.ctx.filter = `hue-rotate(${hueShift}deg) saturate(${saturation}%) brightness(${brightness}%)`;
+                    this.ctx.drawImage(this.auroraImage, drawX, drawY, drawWidth, drawHeight);
+                    
+                    // Reset filter and alpha
+                    this.ctx.filter = 'none';
+                    this.ctx.restore();
+                    
+                    // Add animated aurora overlay effects with smooth scaling
+                    if (intensityFactor > 0) {
+                        this.drawAuroraOverlay();
+                    }
+                } else {
+                    // Fallback gradient background if image not loaded
+                    const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
+                    gradient.addColorStop(0, '#0a0a2e');
+                    gradient.addColorStop(0.5, '#16213e');
+                    gradient.addColorStop(1, '#1a1a3a');
+                    
+                    this.ctx.fillStyle = gradient;
+                    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                }
+                
+                // Draw animated elements
+                this.drawStars();
+                this.drawParticles();
+                
+                requestAnimationFrame(() => this.animate());
+            }
+            
+            drawAuroraOverlay() {
+                // Create animated aurora overlay effects that respond to intensity
+                const intensityFactor = this.intensity / 100;
+                
+                // Animated color overlays
+                for (let i = 0; i < 3; i++) {
+                    const gradient = this.ctx.createRadialGradient(
+                        this.canvas.width * (0.3 + i * 0.2), 
+                        this.canvas.height * (0.4 + Math.sin(this.animationTime + i) * 0.1),
+                        0,
+                        this.canvas.width * (0.3 + i * 0.2), 
+                        this.canvas.height * (0.4 + Math.sin(this.animationTime + i) * 0.1),
+                        this.canvas.width * (0.3 + intensityFactor * 0.4)
+                    );
+                    
+                    const colors = [
+                        `rgba(0, 255, 150, ${intensityFactor * 0.3})`,
+                        `rgba(0, 212, 255, ${intensityFactor * 0.25})`,
+                        `rgba(150, 255, 0, ${intensityFactor * 0.2})`
+                    ];
+                    
+                    gradient.addColorStop(0, colors[i]);
+                    gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                    
+                    this.ctx.save();
+                    this.ctx.globalCompositeOperation = 'screen';
+                    this.ctx.fillStyle = gradient;
+                    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                    this.ctx.restore();
+                }
+                
+                // Pulsing aurora effect
+                const pulseIntensity = (Math.sin(this.animationTime * 2) + 1) / 2;
+                const overlayGradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
+                overlayGradient.addColorStop(0, `rgba(0, 255, 150, ${intensityFactor * pulseIntensity * 0.1})`);
+                overlayGradient.addColorStop(0.5, `rgba(0, 212, 255, ${intensityFactor * pulseIntensity * 0.15})`);
+                overlayGradient.addColorStop(1, `rgba(150, 255, 0, ${intensityFactor * pulseIntensity * 0.1})`);
+                
+                this.ctx.save();
+                this.ctx.globalCompositeOperation = 'screen';
+                this.ctx.fillStyle = overlayGradient;
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                this.ctx.restore();
+            }
+        }
+        
+        // Initialize Aurora Painter when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            new AuroraPainter();
+        });
+    </script>
+</body>
+</html>

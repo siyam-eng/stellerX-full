@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import NewLandingPage from './components/NewLandingPage';
 import LandingPage from './components/LandingPage';
 import InteractiveSpaceWeatherElements from './components/InteractiveSpaceWeatherElements';
@@ -7,6 +7,7 @@ import StarField from './components/StarField';
 import InteractiveDamageSimulator from './components/InteractiveDamageSimulator';
 import AuroraPainter from './components/AuroraPainter';
 import DetailedImpactPage from './components/DetailedImpactPage';
+import LegacyPageWithOverlay from './components/LegacyPageWithOverlay';
 
 function App() {
   const [currentPage, setCurrentPage] = useState(0);
@@ -15,6 +16,8 @@ function App() {
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [videoError, setVideoError] = useState(false);
   const [selectedCharacterForDetails, setSelectedCharacterForDetails] = useState<{id: string, name: string, emoji: string} | null>(null);
+  const [legacyPagePreloaded, setLegacyPagePreloaded] = useState(false);
+  const legacyIframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -23,6 +26,45 @@ function App() {
 
     return () => clearTimeout(timer);
   }, []);
+
+  // Preload legacy page in background after initial loading is complete
+  useEffect(() => {
+    if (!isLoading && !legacyPagePreloaded) {
+      // Use requestIdleCallback for better performance, fallback to setTimeout
+      const schedulePreload = (callback: () => void) => {
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(callback, { timeout: 2000 });
+        } else {
+          setTimeout(callback, 100);
+        }
+      };
+
+      schedulePreload(() => {
+        setLegacyPagePreloaded(true);
+      });
+    }
+  }, [isLoading, legacyPagePreloaded]);
+
+  // Add keyboard navigation for legacy page
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (currentPage === 2) {
+        switch (event.key) {
+          case 'Escape':
+            navigateToPage(1); // Go back to previous page
+            break;
+          case 'Enter':
+          case ' ': // Space bar
+            event.preventDefault();
+            navigateToPage(3); // Continue to next page
+            break;
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [currentPage]);
 
   const navigateToPage = (page: number) => {
     if (page === currentPage) return;
@@ -57,7 +99,8 @@ function App() {
       case 1:
         return <LandingPage onNext={() => navigateToPage(2)} onSkipToElements={() => navigateToPage(2)} />;
       case 2:
-        return <InteractiveSpaceWeatherElements onNext={() => navigateToPage(3)} />;
+        // LegacyPage is handled separately below
+        return null;
       case 3:
         return <InteractiveDamageSimulator selectedCharacter={null} onNext={() => navigateToPage(4)} onBack={() => navigateToPage(2)} onLearnMore={navigateToDetailsPage} />;
       case 4:
@@ -87,7 +130,7 @@ function App() {
           opacity: 0.6
         }}
       >
-        <source src="/Video/225937.mp4" type="video/mp4" />
+        <source src="/assets/video/225937.mp4" type="video/mp4" />
       </video>
       
       {/* Fallback Animated Space Background - shown if video fails or hasn't loaded */}
@@ -168,34 +211,51 @@ function App() {
         <div className="fixed inset-0 z-40 bg-gradient-to-r from-purple-900 via-blue-900 to-indigo-900 opacity-90 animate-fadeIn"></div>
       )}
       
+      {/* Background preloaded LegacyPage with overlay controls */}
+      {legacyPagePreloaded && (
+        <LegacyPageWithOverlay
+          ref={legacyIframeRef}
+          isVisible={currentPage === 2}
+          onNavigate={navigateToPage}
+          currentPage={currentPage}
+          isLoading={isLoading}
+          isTransitioning={isTransitioning}
+        />
+      )}
+
+      {/* Other pages */}
       <div className={`relative z-20 transition-all duration-700 ease-in-out ${
         isLoading ? 'opacity-0 transform scale-95' : 'opacity-100 transform scale-100'
       } ${
         isTransitioning ? 'opacity-0 transform translate-y-8' : 'opacity-100 transform translate-y-0'
+      } ${
+        currentPage === 2 ? 'opacity-0 transform translate-y-8 pointer-events-none' : ''
       }`}>
         <div className="animate-slideInUp">
           {renderCurrentPage()}
         </div>
       </div>
       
-      {/* Enhanced Navigation dots */}
-      <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-30 flex space-x-3 animate-slideInUp">
-        {[0, 1, 2, 3, 4, 5].map((page) => (
-          <button
-            key={page}
-            onClick={() => navigateToPage(page)}
-            className={`relative w-3 h-3 rounded-full transition-all duration-500 transform hover:scale-150 ${
-              currentPage === page
-                ? 'bg-stellar-gold scale-125 shadow-lg shadow-stellar-gold/50'
-                : 'bg-white bg-opacity-50 hover:bg-opacity-75'
-            }`}
-          >
-            {currentPage === page && (
-              <div className="absolute inset-0 rounded-full bg-stellar-gold animate-ping opacity-75"></div>
-            )}
-          </button>
-        ))}
-      </div>
+      {/* Enhanced Navigation dots - hidden when on legacy page */}
+      {currentPage !== 2 && (
+        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-30 flex space-x-3 animate-slideInUp">
+          {[0, 1, 2, 3, 4, 5].map((page) => (
+            <button
+              key={page}
+              onClick={() => navigateToPage(page)}
+              className={`relative w-3 h-3 rounded-full transition-all duration-500 transform hover:scale-150 ${
+                currentPage === page
+                  ? 'bg-stellar-gold scale-125 shadow-lg shadow-stellar-gold/50'
+                  : 'bg-white bg-opacity-50 hover:bg-opacity-75'
+              }`}
+            >
+              {currentPage === page && (
+                <div className="absolute inset-0 rounded-full bg-stellar-gold animate-ping opacity-75"></div>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
